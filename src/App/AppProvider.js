@@ -11,14 +11,15 @@ export class AppProvider extends React.Component {
     constructor(props){
         super(props);
         this.state  = {
-            page: 'dashboard',
+            page: 'dashboard', 
             favorites: ['BTC', 'ETH', 'XMR', 'DOGE'],
             ...this.getSavedSettings(),
             setPage: this.setPage,
             addCoin: this.addCoin,
             removeCoin: this.removeCoin,
             confirmFavorites: this.confirmFavorites,
-            isInFavorites: this.isInFavorites
+            isInFavorites: this.isInFavorites,
+            setFilteredCoins : this.setFilteredCoins
         }
     } 
 
@@ -67,6 +68,8 @@ export class AppProvider extends React.Component {
     
     setPage = page => this.setState({page});
     
+    setFilteredCoins = filteredCoins => this.setState({filteredCoins}); 
+
     render(){
         return (
             <AppContext.Provider value={this.state}>
