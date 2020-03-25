@@ -6,6 +6,7 @@ import {AppProvider} from './AppProvider';
 import Welcome from './WelcomeMessage';
 import AppLayout from './AppLayout';
 import AppBar from './AppBar';
+import Settings from '../Settings';
 
 
 class App extends Component {
@@ -15,6 +16,7 @@ class App extends Component {
         <AppProvider>
           <AppBar />
           <Welcome />
+          <Settings />
         </AppProvider>
       </AppLayout>
     );
