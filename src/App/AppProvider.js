@@ -13,7 +13,8 @@ export class AppProvider extends React.Component {
     constructor(props){
         super(props);
         this.state  = {
-            page: 'dashboard', 
+            page: 'dashboard',
+            timeUnit: 'months', 
             favorites: ['BTC', 'ETH', 'XMR', 'DOGE'],
             ...this.getSavedSettings(),
             setPage: this.setPage,
@@ -22,9 +23,14 @@ export class AppProvider extends React.Component {
             confirmFavorites: this.confirmFavorites,
             isInFavorites: this.isInFavorites,
             setFilteredCoins: this.setFilteredCoins,
-            setCurrentFavorite: this.setCurrentFavorite
+            setCurrentFavorite: this.setCurrentFavorite,
+            changeChartSelect: this.changeChartSelect
         }
     } 
+
+    changeChartSelect = value => {
+        this.setState({timeUnit: value,  historical: null}, this.fetchHistorical);
+    }
 
     setCurrentFavorite = sym => {
         this.setState({currentFavorite: sym, historical: null},
@@ -63,7 +69,7 @@ export class AppProvider extends React.Component {
             {
                 name: this.state.currentFavorite,
                 data: results.map((ticker, index) => [
-                    moment().subtract({days: TIME_UNITS - index}).valueOf(),
+                    moment().subtract({[this.state.timeUnit]: TIME_UNITS - index}).valueOf(),
                     ticker.USD
                 ])
             }
@@ -78,7 +84,7 @@ export class AppProvider extends React.Component {
                 cc.priceHistorical(
                     this.state.currentFavorite,
                     ['USD'],
-                    moment().subtract({days: unit}).toDate()
+                    moment().subtract({[this.state.timeUnit]: unit}).toDate()
                 )
             );
         }
@@ -106,6 +112,7 @@ export class AppProvider extends React.Component {
     fetchPrices = async () => {
         if(this.state.firstVisit) return;
         let prices = await this.prices();
+        console.log(prices);
         prices = prices.filter(price => Object.keys(price).length);
         this.setState({prices});
     }
