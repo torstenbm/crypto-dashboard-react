@@ -19,9 +19,18 @@ export class AppProvider extends React.Component {
             removeCoin: this.removeCoin,
             confirmFavorites: this.confirmFavorites,
             isInFavorites: this.isInFavorites,
-            setFilteredCoins : this.setFilteredCoins
+            setFilteredCoins: this.setFilteredCoins,
+            setCurrentFavorite: this.setCurrentFavorite
         }
     } 
+
+    setCurrentFavorite = sym => {
+        this.setState({currentFavorite: sym});
+        localStorage.setItem('data', JSON.stringify({
+            ...JSON.parse(localStorage.getItem('data')),
+            currentFavorite: sym
+        }));
+    }
 
     isInFavorites = key => _.includes(this.state.favorites, key);
     
@@ -69,14 +78,17 @@ export class AppProvider extends React.Component {
     }
 
     confirmFavorites = () => {
+        let currentFavorite = this.state.favorites[0]
         this.setState({
             firstVisit: false,
-            page: 'dashboard'
+            page: 'dashboard',
+            currentFavorite
         }, () => {
             this.fetchPrices();
         });
         localStorage.setItem('data', JSON.stringify({
-            favorites: this.state.favorites
+            favorites: this.state.favorites,
+            currentFavorite: currentFavorite
         }))
     }
 
@@ -85,8 +97,8 @@ export class AppProvider extends React.Component {
         if (!data){
             return { page: "settings", firstVisit: true };
         } 
-        let favorites = data.favorites;
-        return {favorites};
+        let {favorites, currentFavorite} = data;
+        return {favorites, currentFavorite};
     }
     
     setPage = page => this.setState({page});
