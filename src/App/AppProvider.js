@@ -1,11 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 
 const cc = require('cryptocompare');
 
 export const AppContext = React.createContext();
 
 const MAX_FAVORITES = 10;
+const TIME_UNITS = 10 ;
 
 export class AppProvider extends React.Component {
     constructor(props){
@@ -25,7 +27,8 @@ export class AppProvider extends React.Component {
     } 
 
     setCurrentFavorite = sym => {
-        this.setState({currentFavorite: sym});
+        this.setState({currentFavorite: sym, historical: null},
+            () => this.fetchHistorical());
         localStorage.setItem('data', JSON.stringify({
             ...JSON.parse(localStorage.getItem('data')),
             currentFavorite: sym
@@ -50,6 +53,36 @@ export class AppProvider extends React.Component {
     componentDidMount(){
         this.fetchCoins();
         this.fetchPrices();
+        this.fetchHistorical();
+    }
+
+    fetchHistorical = async () => {
+        if(this.state.firstVisit) return;
+        let results = await this.historical();
+        let historical = [
+            {
+                name: this.state.currentFavorite,
+                data: results.map((ticker, index) => [
+                    moment().subtract({months: TIME_UNITS - index}),
+                    ticker.USD
+                ])
+            }
+        ];
+        this.setState({historical});
+    }
+
+    historical = () => {
+        let promises = [];
+        for (let unit = TIME_UNITS; unit > 0; unit--){
+            promises.push(
+                cc.priceHistorical(
+                    this.state.currentFavorite,
+                    ['USD'],
+                    moment().subtract({months: unit}).toDate()
+                )
+            );
+        }
+        return Promise.all(promises);
     }
 
     fetchCoins = async () => {
@@ -85,6 +118,7 @@ export class AppProvider extends React.Component {
             currentFavorite
         }, () => {
             this.fetchPrices();
+            this.fetchHistorical();
         });
         localStorage.setItem('data', JSON.stringify({
             favorites: this.state.favorites,
