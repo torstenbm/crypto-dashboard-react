@@ -63,7 +63,7 @@ export class AppProvider extends React.Component {
             {
                 name: this.state.currentFavorite,
                 data: results.map((ticker, index) => [
-                    moment().subtract({months: TIME_UNITS - index}),
+                    moment().subtract({days: TIME_UNITS - index}).valueOf(),
                     ticker.USD
                 ])
             }
@@ -78,7 +78,7 @@ export class AppProvider extends React.Component {
                 cc.priceHistorical(
                     this.state.currentFavorite,
                     ['USD'],
-                    moment().subtract({months: unit}).toDate()
+                    moment().subtract({days: unit}).toDate()
                 )
             );
         }
