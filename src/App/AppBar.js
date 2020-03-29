@@ -43,7 +43,7 @@ function ControlButton({name, active}){
 export default function(){
     return (
         <Bar> 
-            <Logo>AsterixDB Crypto Project</Logo>
+            <Logo>Crypto Sentiment Project</Logo>
             <div />
             <ControlButton name="dashboard" active/>
             <ControlButton name="settings" />
